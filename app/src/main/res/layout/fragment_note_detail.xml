@@ -9,7 +9,7 @@
     android:background="@drawable/gradient_background">
 
     <!-- Заголовок заметки -->
-    <TextView
+    <EditText
         android:id="@+id/note_title_text"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -34,12 +34,13 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
-        <TextView
+        <EditText
             android:id="@+id/note_content_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Содержание заметки"
             android:textSize="16sp"
+            android:gravity="top|start"
             android:textColor="@color/black"
             android:lineSpacingExtra="4dp" />
 

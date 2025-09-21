@@ -13,6 +13,7 @@ import com.example.notepad.data.NoteRepository
 import com.example.notepad.databinding.ActivityMainBinding
 import com.example.notepad.domain.Note
 import com.example.notepad.view.adapters.NoteAdapter
+import com.example.notepad.view.fragments.NoteDetailFragment
 import com.example.notepad.view.viewmodels.NoteViewModel
 
 class MainActivity : AppCompatActivity() {
@@ -47,10 +48,22 @@ class MainActivity : AppCompatActivity() {
             }
         })[NoteViewModel::class.java]
 
-        viewModel.getAllNotes().observe(this) {
-            notes -> adapter.updateNotes(notes)
+        viewModel.getAllNotes().observe(this) { notes ->
+            adapter.updateNotes(notes)
         }
 
-
+        binding.floatingActionButton.setOnClickListener {
+            openDetailFragment(NoteDetailFragment())
         }
+    }
+
+    private fun openDetailFragment(fragment: NoteDetailFragment) {
+        supportFragmentManager
+            .beginTransaction()
+            .replace(R.id.fragment_container, fragment)
+            .addToBackStack(null)
+            .commit()
+
+    }
+
 }
