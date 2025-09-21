@@ -48,8 +48,10 @@ class MainActivity : AppCompatActivity() {
             }
         })[NoteViewModel::class.java]
 
-        viewModel.getAllNotes().observe(this) { notes ->
-            adapter.updateNotes(notes)
+        viewModel.loadNotes()
+
+        viewModel.notes.observe(this){
+            notes -> adapter.updateNotes(notes)
         }
 
         binding.floatingActionButton.setOnClickListener {
