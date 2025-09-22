@@ -21,6 +21,7 @@ import com.example.notepad.data.AppDataBase
 import com.example.notepad.data.NoteRepository
 import com.example.notepad.databinding.ActivityMainBinding
 import com.example.notepad.domain.Note
+import com.example.notepad.utils.PermissionManager
 import com.example.notepad.view.adapters.NoteAdapter
 import com.example.notepad.view.fragments.NoteDetailFragment
 import com.example.notepad.view.viewmodels.NoteViewModel
@@ -29,30 +30,46 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private lateinit var adapter: NoteAdapter
     private lateinit var viewModel: NoteViewModel
+    private lateinit var permissionManager: PermissionManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
+
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        checkAndRequestPermissions()
+        enableEdgeToEdge()
+        initDependencies()
+        setupUI()
+        checkPermissions()
+    }
 
+    private fun initDependencies() {
         viewModel = (application as NotesApplication).viewModel
-        // Инициализация адаптера
+        permissionManager = PermissionManager(this)
+    }
+
+    private fun setupUI() {
+        setupRecyclerView()
+        setupFab()
+    }
+
+    private fun setupRecyclerView() {
         adapter = NoteAdapter(emptyList()) { note ->
             openDetailFragment(note.id)
         }
 
-        binding.notesRecyclerView.adapter = adapter
-        binding.notesRecyclerView.layoutManager = LinearLayoutManager(this)
+        binding.notesRecyclerView.apply {
+            adapter = this@MainActivity.adapter
+            layoutManager = LinearLayoutManager(this@MainActivity)
+        }
 
-
-        // Наблюдение за изменениями в списке заметок
         viewModel.getAllNotes().observe(this) { notes ->
             adapter.updateNotes(notes)
         }
+    }
 
+    private fun setupFab() {
         binding.floatingActionButton.setOnClickListener {
             openDetailFragment()
         }
@@ -60,7 +77,6 @@ class MainActivity : AppCompatActivity() {
 
     private fun openDetailFragment(noteId: Long = -1) {
         val fragment = NoteDetailFragment.newInstance(noteId)
-
         supportFragmentManager
             .beginTransaction()
             .replace(R.id.fragment_container, fragment)
@@ -68,36 +84,18 @@ class MainActivity : AppCompatActivity() {
             .commit()
     }
 
-    private fun checkAndRequestPermissions() {
-        val permissionsToRequest = mutableListOf<String>()
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
-            if (!alarmManager.canScheduleExactAlarms()) {
-                permissionsToRequest.add(Manifest.permission.SCHEDULE_EXACT_ALARM)
-            }
-        }
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
-                permissionsToRequest.add(Manifest.permission.POST_NOTIFICATIONS)
-            }
-        }
-
-        if (permissionsToRequest.isNotEmpty()) {
-            ActivityCompat.requestPermissions(this, permissionsToRequest.toTypedArray(), 123)
+    private fun checkPermissions() {
+        val permissions = permissionManager.getRequiredPermissions()
+        if (permissions.isNotEmpty()) {
+            ActivityCompat.requestPermissions(this, permissions, 123)
         }
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == 123) {
-            // Проверяем результат запроса разрешений
-            for (i in permissions.indices) {
-                if (grantResults[i] != PackageManager.PERMISSION_GRANTED) {
-
-                    Toast.makeText(this, "Для работы напоминаний нужны все разрешения", Toast.LENGTH_SHORT).show()
-                }
+            if (!permissionManager.areAllPermissionsGranted(grantResults)) {
+                Toast.makeText(this, "Некоторые функции могут не работать", Toast.LENGTH_LONG).show()
             }
         }
     }
