@@ -22,4 +22,10 @@ interface NoteDao {
 
     @Delete
     suspend fun deleteNote(note: Note)
+
+    @Query("SELECT * FROM notes WHERE id =:id")
+    fun getNoteById(id: Long): LiveData<Note?>
+
+    @Query("DELETE FROM notes WHERE id = :id")
+    suspend fun deleteNoteById(id: Long)
 }

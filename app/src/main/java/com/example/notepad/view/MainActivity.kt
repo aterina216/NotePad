@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.notepad.NotesApplication
 import com.example.notepad.R
 import com.example.notepad.data.AppDataBase
 import com.example.notepad.data.NoteRepository
@@ -17,11 +18,9 @@ import com.example.notepad.view.fragments.NoteDetailFragment
 import com.example.notepad.view.viewmodels.NoteViewModel
 
 class MainActivity : AppCompatActivity() {
-
     private lateinit var binding: ActivityMainBinding
     private lateinit var adapter: NoteAdapter
     private lateinit var viewModel: NoteViewModel
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,43 +28,33 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        adapter = NoteAdapter(emptyList())
+        viewModel = (application as NotesApplication).viewModel
+        // Инициализация адаптера
+        adapter = NoteAdapter(emptyList()) { note ->
+            openDetailFragment(note.id)
+        }
 
         binding.notesRecyclerView.adapter = adapter
         binding.notesRecyclerView.layoutManager = LinearLayoutManager(this)
 
-        val db = AppDataBase.getDataBase(applicationContext)
-        val noteDao = db.noteDao()
-        val repository = NoteRepository(noteDao)
 
-        viewModel = ViewModelProvider(this, object : ViewModelProvider.Factory {
-            override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                if (modelClass.isAssignableFrom(NoteViewModel::class.java)) {
-                    @Suppress("UNCHECKED_CAST")
-                    return NoteViewModel(repository) as T
-                }
-                throw IllegalArgumentException("Unknown ViewModel class")
-            }
-        })[NoteViewModel::class.java]
-
-        viewModel.loadNotes()
-
-        viewModel.notes.observe(this){
-            notes -> adapter.updateNotes(notes)
+        // Наблюдение за изменениями в списке заметок
+        viewModel.getAllNotes().observe(this) { notes ->
+            adapter.updateNotes(notes)
         }
 
         binding.floatingActionButton.setOnClickListener {
-            openDetailFragment(NoteDetailFragment())
+            openDetailFragment()
         }
     }
 
-    private fun openDetailFragment(fragment: NoteDetailFragment) {
+    private fun openDetailFragment(noteId: Long = -1) {
+        val fragment = NoteDetailFragment.newInstance(noteId)
+
         supportFragmentManager
             .beginTransaction()
             .replace(R.id.fragment_container, fragment)
             .addToBackStack(null)
             .commit()
-
     }
-
 }

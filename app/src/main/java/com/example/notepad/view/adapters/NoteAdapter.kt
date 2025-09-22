@@ -8,7 +8,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.notepad.databinding.NoteItemBinding
 import com.example.notepad.domain.Note
 
-class NoteAdapter(private var notes: List<Note>): RecyclerView.Adapter<NoteViewHolder>() {
+class NoteAdapter(private var notes: List<Note>,
+    private val onItemClick: (Note) -> Unit): RecyclerView.Adapter<NoteViewHolder>() {
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
@@ -21,7 +22,12 @@ class NoteAdapter(private var notes: List<Note>): RecyclerView.Adapter<NoteViewH
         holder: NoteViewHolder,
         position: Int
     ) {
-        holder.bind(notes[position])
+        val note = notes[position]
+        holder.bind(note)
+
+        holder.itemView.setOnClickListener {
+            onItemClick(note)
+        }
     }
 
     override fun getItemCount(): Int {
