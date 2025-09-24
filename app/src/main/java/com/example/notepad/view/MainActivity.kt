@@ -1,7 +1,9 @@
 package com.example.notepad.view
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.AlarmManager
+import android.app.AlertDialog
 import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
@@ -80,6 +82,36 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    @SuppressLint("ResourceAsColor")
+    private fun showDeleteConfirmationDialog(note: Note, position: Int,
+                                             viewHolder: RecyclerView.ViewHolder){
+
+        val dialog = AlertDialog.Builder(this)
+            .setTitle("Удаление заметки")
+            .setMessage("Вы уверены, что хотите удалить заметку \"${note.title}\"?")
+            .setPositiveButton("Удалить")
+            {
+                dialog, which ->
+                viewModel.deleteNote(note)
+                showToast("Заметка удалена")
+            }
+            .setNegativeButton("Отмена"){
+                dialog, which ->
+                adapter.notifyItemChanged(position)
+            }
+            .setCancelable(true)
+            .create()
+
+        dialog.show()
+        dialog.getButton(AlertDialog.BUTTON_POSITIVE)?.setTextColor(
+            R.color.teal_700
+        )
+    }
+
+    private fun showToast(message: String) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+    }
+
     private fun setupSwipeToDelete() {
         val itemTouchHelper = ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(
             0, // направления для drag & drop (0 = отключено)
@@ -100,7 +132,7 @@ class MainActivity : AppCompatActivity() {
                         adapter.getNoteAt(position) // Нужно добавить этот метод в адаптер
                     noteToDelete?.let { note ->
                         // Удаляем из ViewModel
-                        viewModel.deleteNote(note)
+                       showDeleteConfirmationDialog(note, position, viewHolder)
                     }
                 }
             }
