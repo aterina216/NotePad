@@ -14,7 +14,9 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.notepad.NotesApplication
 import com.example.notepad.R
 import com.example.notepad.data.AppDataBase
@@ -64,6 +66,9 @@ class MainActivity : AppCompatActivity() {
             layoutManager = LinearLayoutManager(this@MainActivity)
         }
 
+        setupSwipeToDelete()
+
+
         viewModel.getAllNotes().observe(this) { notes ->
             adapter.updateNotes(notes)
         }
@@ -73,6 +78,34 @@ class MainActivity : AppCompatActivity() {
         binding.floatingActionButton.setOnClickListener {
             openDetailFragment()
         }
+    }
+
+    private fun setupSwipeToDelete() {
+        val itemTouchHelper = ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(
+            0, // направления для drag & drop (0 = отключено)
+            ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT // направления свайпа
+        ) {
+            override fun onMove(
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder,
+                target: RecyclerView.ViewHolder
+            ): Boolean {
+                return false // Не поддерживаем перетаскивание
+            }
+
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                val position = viewHolder.adapterPosition
+                if (position != RecyclerView.NO_POSITION) {
+                    val noteToDelete =
+                        adapter.getNoteAt(position) // Нужно добавить этот метод в адаптер
+                    noteToDelete?.let { note ->
+                        // Удаляем из ViewModel
+                        viewModel.deleteNote(note)
+                    }
+                }
+            }
+        })
+        itemTouchHelper.attachToRecyclerView(binding.notesRecyclerView)
     }
 
     private fun openDetailFragment(noteId: Long = -1) {

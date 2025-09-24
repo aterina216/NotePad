@@ -39,6 +39,14 @@ class NoteAdapter(private var notes: List<Note>,
         notifyDataSetChanged()
     }
 
+    fun getNoteAt(position: Int) : Note?{
+        return if (position in 0 until notes.size ){
+            notes[position]
+        }
+        else {
+            null
+        }
+    }
 }
 
 class NoteViewHolder(private val binding: NoteItemBinding) : RecyclerView.ViewHolder(binding.root) {
