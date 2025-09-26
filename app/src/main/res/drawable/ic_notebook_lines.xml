@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="120dp"
+    android:height="120dp"
+    android:viewportWidth="100"
+    android:viewportHeight="100">
+
+    <group android:name="notebook_group">
+        <!-- Обложка блокнота -->
+        <path
+            android:name="cover"
+            android:fillColor="#2196F3"
+            android:strokeColor="#1976D2"
+            android:strokeWidth="1.5"
+            android:pathData="M15,10 L85,10 L85,90 L15,90 Z" />
+
+        <!-- Страницы -->
+        <path
+            android:name="pages"
+            android:fillColor="#FFFFFF"
+            android:strokeColor="#E0E0E0"
+            android:strokeWidth="0.8"
+            android:pathData="M20,15 L80,15 L80,85 L20,85 Z" />
+    </group>
+
+    <!-- Строки текста (отдельные группы для анимации) -->
+    <group android:name="lines_group">
+        <path
+            android:name="line1"
+            android:fillColor="#757575"
+            android:pathData="M25,25 L75,25 L75,27 L25,27 Z"
+            android:alpha="0.0" />
+
+        <path
+            android:name="line2"
+            android:fillColor="#757575"
+            android:pathData="M25,35 L60,35 L60,37 L25,37 Z"
+            android:alpha="0.0" />
+
+        <path
+            android:name="line3"
+            android:fillColor="#757575"
+            android:pathData="M25,45 L70,45 L70,47 L25,47 Z"
+            android:alpha="0.0" />
+
+        <path
+            android:name="line4"
+            android:fillColor="#757575"
+            android:pathData="M25,55 L65,55 L65,57 L25,57 Z"
+            android:alpha="0.0" />
+    </group>
+</vector>

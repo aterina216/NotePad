@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="120dp"
+    android:height="120dp"
+    android:viewportWidth="100"
+    android:viewportHeight="100">
+
+    <group android:name="notebook">
+        <!-- Обложка -->
+        <path
+            android:name="cover"
+            android:fillColor="#4CAF50"
+            android:strokeColor="#388E3C"
+            android:strokeWidth="1"
+            android:pathData="M10,10 L90,10 L90,90 L10,90 Z" />
+
+        <!-- Страницы -->
+        <path
+            android:name="pages"
+            android:fillColor="#FFFFFF"
+            android:strokeColor="#E0E0E0"
+            android:strokeWidth="0.5"
+            android:pathData="M15,15 L85,15 L85,85 L15,85 Z" />
+    </group>
+</vector>

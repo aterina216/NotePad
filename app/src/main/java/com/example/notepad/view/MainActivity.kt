@@ -8,6 +8,7 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
+import android.view.View
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
@@ -28,6 +29,7 @@ import com.example.notepad.domain.Note
 import com.example.notepad.utils.PermissionManager
 import com.example.notepad.view.adapters.NoteAdapter
 import com.example.notepad.view.fragments.NoteDetailFragment
+import com.example.notepad.view.fragments.SplashFragment
 import com.example.notepad.view.viewmodels.NoteViewModel
 
 class MainActivity : AppCompatActivity() {
@@ -42,10 +44,37 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        showSplash()
+
         enableEdgeToEdge()
         initDependencies()
         setupUI()
         checkPermissions()
+    }
+
+    fun onSplashFinished() {
+        supportFragmentManager.beginTransaction()
+            .remove(supportFragmentManager.findFragmentById(R.id.fragment_container)!!)
+            .commit()
+
+        binding.notesRecyclerView.visibility = View.VISIBLE
+        binding.floatingActionButton.visibility = View.VISIBLE
+
+        // Твоя обычная инициализация
+        initDependencies()
+        setupUI()
+        checkPermissions()
+    }
+
+    private fun showSplash() {
+        // Скрываем основной интерфейс
+        binding.notesRecyclerView.visibility = View.GONE
+        binding.floatingActionButton.visibility = View.GONE
+
+        // Показываем фрагмент заставки
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.fragment_container, SplashFragment())
+            .commit()
     }
 
     private fun initDependencies() {

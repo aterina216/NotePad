@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/gradient_background">
+
+    <!-- Основной контент заставки -->
+    <LinearLayout
+        android:id="@+id/splash_content"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:alpha="0">
+
+        <!-- Анимированный блокнот -->
+        <ImageView
+            android:id="@+id/notebook_image"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:src="@drawable/avd_notebook_lines" />
+
+        <!-- Текст -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:text="Мой Блокнот"
+            android:textColor="?attr/colorPrimary"
+            android:textSize="28sp"
+            android:textStyle="bold" />
+
+        <!-- Fallback строки (видны только если векторная анимация не работает) -->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:visibility="gone">
+
+            <TextView
+                android:id="@+id/line1"
+                android:layout_width="80dp"
+                android:layout_height="2dp"
+                android:background="#757575"
+                android:alpha="0" />
+
+            <TextView
+                android:id="@+id/line2"
+                android:layout_width="60dp"
+                android:layout_height="2dp"
+                android:background="#757575"
+                android:layout_marginTop="4dp"
+                android:alpha="0" />
+
+            <TextView
+                android:id="@+id/line3"
+                android:layout_width="70dp"
+                android:layout_height="2dp"
+                android:background="#757575"
+                android:layout_marginTop="4dp"
+                android:alpha="0" />
+
+            <TextView
+                android:id="@+id/line4"
+                android:layout_width="65dp"
+                android:layout_height="2dp"
+                android:background="#757575"
+                android:layout_marginTop="4dp"
+                android:alpha="0" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+</FrameLayout>
