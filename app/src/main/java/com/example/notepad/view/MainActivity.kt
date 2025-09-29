@@ -26,6 +26,7 @@ import com.example.notepad.data.AppDataBase
 import com.example.notepad.data.NoteRepository
 import com.example.notepad.databinding.ActivityMainBinding
 import com.example.notepad.domain.Note
+import com.example.notepad.utils.AnimationHelper
 import com.example.notepad.utils.PermissionManager
 import com.example.notepad.view.adapters.NoteAdapter
 import com.example.notepad.view.fragments.NoteDetailFragment
@@ -112,20 +113,28 @@ class MainActivity : AppCompatActivity() {
     }
 
     @SuppressLint("ResourceAsColor")
-    private fun showDeleteConfirmationDialog(note: Note, position: Int,
-                                             viewHolder: RecyclerView.ViewHolder){
-
+    private fun showDeleteConfirmationDialog(note: Note, position: Int, viewHolder: RecyclerView.ViewHolder) {
         val dialog = AlertDialog.Builder(this)
             .setTitle("Удаление заметки")
             .setMessage("Вы уверены, что хотите удалить заметку \"${note.title}\"?")
-            .setPositiveButton("Удалить")
-            {
-                dialog, which ->
-                viewModel.deleteNote(note)
-                showToast("Заметка удалена")
+            .setPositiveButton("Удалить") { dialog, which ->
+                dialog.dismiss()
+
+                // Простой вариант - скрываем элемент сразу
+                viewHolder.itemView.visibility = View.GONE
+
+                AnimationHelper.startDeleteAnimation(viewHolder.itemView) {
+                    // Удаляем из ViewModel
+                    viewModel.deleteNote(note)
+                    showToast("Заметка удалена")
+
+                    // Принудительно обновляем адаптер
+                    viewModel.getAllNotes().observe(this@MainActivity) { notes ->
+                        adapter.updateNotes(notes)
+                    }
+                }
             }
-            .setNegativeButton("Отмена"){
-                dialog, which ->
+            .setNegativeButton("Отмена") { dialog, which ->
                 adapter.notifyItemChanged(position)
             }
             .setCancelable(true)
@@ -133,7 +142,7 @@ class MainActivity : AppCompatActivity() {
 
         dialog.show()
         dialog.getButton(AlertDialog.BUTTON_POSITIVE)?.setTextColor(
-            R.color.teal_700
+            ContextCompat.getColor(this, R.color.teal_700)
         )
     }
 

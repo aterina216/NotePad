@@ -47,6 +47,7 @@ class NoteAdapter(private var notes: List<Note>,
             null
         }
     }
+
 }
 
 class NoteViewHolder(private val binding: NoteItemBinding) : RecyclerView.ViewHolder(binding.root) {
